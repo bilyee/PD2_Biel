@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+        <title>Task List</title>
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="/resources/demos/style.css">
+
+        <!-- LIBS -->
+        <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+        <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+    </head>
+    <body>
+        <h1>TaskList</h1>
+
+        <div id="taskform" title="Nova Tasca">
+            <input type="text" id="taskText" placeholder="New Task..." />
+            <button id="addTask">Add Task</button>
+
+            <ul id="taskList" data-role="listview" data-inset="true"></ul>
+        </div>
+        <script>
+            dialog = $("#taskform").dialog({
+                autoOpen: true,
+                height: 400,
+                width: 350,
+                modal: true });
+
+            $(document).ready(function() {
+                // Añadimos la tarea
+                $("#addTask").on("click", function() {
+                    let taskText = $("#taskText").val().trim();
+                    if (taskText !== "") {
+                        let li = $(`
+                            <li>
+                                <div class="task-item">
+                                    <span class="task-text">${taskText}</span>
+                                    <button class="editBtn">Edit Task</button>
+                                </div>
+                            </li>
+                        `);
+
+                        // Editar la tarea añadida
+                        li.find(".editBtn").on("click", function() {
+                            let span = $(this).siblings(".task-text");
+                            let oldText = span.text();
+                            let newText = prompt("Editar tarea:", oldText);
+                            if (newText !== null && newText.trim() !== "") {
+                                span.text(newText.trim());
+                            }
+                        });
+
+                        $("#taskList").append(li).listview("refresh");
+                        $("#taskText").val("");
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
