@@ -12,6 +12,52 @@
         <!-- LIBS -->
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
         <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+
+        <style>
+            li {
+                list-style: none;
+                margin-bottom: 10px;
+            }
+            #taskform .task-item {
+                display: flex;
+                justify-content: flex-start;
+                flex-grow: 1;
+                align-items: center;
+            }
+            #taskform .task-item .task-text{
+                margin-right: 10px;
+            }
+            #taskform .task-item .deleteBtn {
+                background-color: red;
+                color: white;
+                border-radius: 1px solid red;
+                border: none;
+                padding: 5px 10px;
+                cursor: pointer;
+            }
+            #taskform .task-item .editBtn {
+                background-color: blue;
+                color: white;
+                border-radius: 1px solid blue;
+                border: none;
+                padding: 5px 10px;
+                margin-right: 10px;
+                cursor: pointer;
+            }
+            #taskform #taskText {
+                align-items: center;
+                width: 50%;
+                margin: 10px 10px 10px 10px;
+                justify-content: center;
+            }
+            #taskform #addTask {
+                background-color: darkorchid;
+                color: white;
+                border-radius: 1px solid darkorchid;
+                padding: 5px 10px;
+                cursor: pointer;
+            }
+        </style>
     </head>
     <body>
         <h1>TaskList</h1>
@@ -26,7 +72,7 @@
             dialog = $("#taskform").dialog({
                 autoOpen: true,
                 height: 400,
-                width: 350,
+                width: 550,
                 modal: true });
 
             $(document).ready(function() {
@@ -39,6 +85,7 @@
                                 <div class="task-item">
                                     <span class="task-text">${taskText}</span>
                                     <button class="editBtn">Edit Task</button>
+                                    <button class="deleteBtn">X</button>
                                 </div>
                             </li>
                         `);
@@ -50,6 +97,10 @@
                             if (newText !== null && newText.trim() !== "") {
                                 span.text(newText.trim());
                             }
+                        });
+
+                        li.find(".deleteBtn").on("click", function() {
+                            $(this).closest("li").remove();
                         });
 
                         $("#taskList").append(li).listview("refresh");
