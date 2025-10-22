@@ -38,9 +38,19 @@
                             <li>
                                 <div class="task-item">
                                     <span class="task-text">${taskText}</span>
+                                    <button class="editBtn">Edit Task</button>
                                 </div>
                             </li>
                         `);
+
+                        li.find(".editBtn").on("click", function() {
+                            let span = $(this).siblings(".task-text");
+                            let oldText = span.text();
+                            let newText = prompt("Editar Tarea:", oldText);
+                            if (newText !== null && newText.trim() !== "") {
+                                span.text(newText.trim());
+                            }
+                        });
 
                         $("#taskList").append(li).listview("refresh");
                         $("#taskText").val("");
