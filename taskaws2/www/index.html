@@ -69,12 +69,6 @@
             <ul id="taskList" data-role="listview" data-inset="true"></ul>
         </div>
         <script>
-            dialog = $("#taskform").dialog({
-                autoOpen: true,
-                height: 400,
-                width: 550,
-                modal: true });
-
             $(document).ready(function() {
                 // Añadimos la tarea
                 $("#addTask").on("click", function() {
@@ -93,7 +87,29 @@
                         li.find(".editBtn").on("click", function() {
                             let span = $(this).siblings(".task-text");
                             let oldText = span.text();
-                            let newText = prompt("Editar Tarea:", oldText);
+                            $("<div></div>").dialog({
+                                modal: true,
+                                title: "Edit Task",
+                                open: function() {
+                                    let input = $('<input type="text" style="width:100%;">').val(oldText);
+                                    $(this).append(input);
+                                },
+                                buttons: {
+                                    "Save": function() {
+                                        let newText = $(this).find("input").val();
+                                        if (newText.trim() !== "") {
+                                            span.text(newText.trim());
+                                        }
+                                        $(this).dialog("close");
+                                    },
+                                    "Cancel": function() {
+                                        $(this).dialog("close");
+                                    }
+                                },
+                                close: function() {
+                                    $(this).remove();
+                                }
+                            });
                             if (newText !== null && newText.trim() !== "") {
                                 span.text(newText.trim());
                             }
