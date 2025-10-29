@@ -5,11 +5,7 @@
         <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
         <title>Task List</title>
 
-        <!-- CSS -->
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
-        <link rel="stylesheet" href="/resources/demos/style.css">
-
-        <!-- LIBS -->
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
         <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
 
@@ -21,16 +17,14 @@
             #taskform .task-item {
                 display: flex;
                 justify-content: flex-start;
-                flex-grow: 1;
                 align-items: center;
             }
-            #taskform .task-item .task-text{
+            #taskform .task-item .task-text {
                 margin-right: 10px;
             }
             #taskform .task-item .deleteBtn {
                 background-color: red;
                 color: white;
-                border-radius: 1px solid red;
                 border: none;
                 padding: 5px 10px;
                 cursor: pointer;
@@ -38,22 +32,19 @@
             #taskform .task-item .editBtn {
                 background-color: blue;
                 color: white;
-                border-radius: 1px solid blue;
                 border: none;
                 padding: 5px 10px;
                 margin-right: 10px;
                 cursor: pointer;
             }
             #taskform #taskText {
-                align-items: center;
                 width: 50%;
-                margin: 10px 10px 10px 10px;
-                justify-content: center;
+                margin: 10px;
             }
             #taskform #addTask {
                 background-color: darkorchid;
                 color: white;
-                border-radius: 1px solid darkorchid;
+                border: none;
                 padding: 5px 10px;
                 cursor: pointer;
             }
@@ -65,28 +56,43 @@
         <div id="taskform" title="Nova Tasca">
             <input type="text" id="taskText" placeholder="New Task..." />
             <button id="addTask">Add Task</button>
-
-            <ul id="taskList" data-role="listview" data-inset="true"></ul>
+            <ul id="taskList"></ul>
         </div>
+
         <script>
             $(document).ready(function() {
-                // Añadimos la tarea
-                $("#addTask").on("click", function() {
-                    let taskText = $("#taskText").val().trim();
-                    if (taskText !== "") {
+                // --- Función para obtener las tareas del localStorage ---
+                function getTasks() {
+                    // Obtenemos las tareas guardadas o un array vacío
+                    let stored = localStorage.getItem("tasks");
+                    return stored ? JSON.parse(stored) : [];
+                }
+
+                // --- Función para guardar el array de tareas en localStorage ---
+                function saveTasks(tasks) {
+                    localStorage.setItem("tasks", JSON.stringify(tasks));
+                }
+
+                function renderTasks() {
+                    $("#taskList").empty();
+                    let tasks = getTasks();
+
+                    tasks.forEach((taskText, index) => {
                         let li = $(`
                             <li>
                                 <div class="task-item">
                                     <span class="task-text">${taskText}</span>
-                                    <button class="editBtn">Edit Task</button>
+                                    <button class="editBtn">Edit</button>
                                     <button class="deleteBtn">X</button>
                                 </div>
                             </li>
                         `);
 
+                        // Botón editar
                         li.find(".editBtn").on("click", function() {
                             let span = $(this).siblings(".task-text");
                             let oldText = span.text();
+
                             $("<div></div>").dialog({
                                 modal: true,
                                 title: "Edit Task",
@@ -96,9 +102,11 @@
                                 },
                                 buttons: {
                                     "Save": function() {
-                                        let newText = $(this).find("input").val();
-                                        if (newText.trim() !== "") {
-                                            span.text(newText.trim());
+                                        let newText = $(this).find("input").val().trim();
+                                        if (newText !== "") {
+                                            tasks[index] = newText;
+                                            saveTasks(tasks);
+                                            renderTasks();
                                         }
                                         $(this).dialog("close");
                                     },
@@ -110,19 +118,33 @@
                                     $(this).remove();
                                 }
                             });
-                            if (newText !== null && newText.trim() !== "") {
-                                span.text(newText.trim());
-                            }
                         });
 
+                        // Botón eliminar
                         li.find(".deleteBtn").on("click", function() {
-                            $(this).closest("li").remove();
+                            tasks.splice(index, 1);
+                            saveTasks(tasks);
+                            renderTasks();
                         });
 
-                        $("#taskList").append(li).listview("refresh");
+                        $("#taskList").append(li);
+                    });
+                }
+
+                // --- Agregar nueva tarea ---
+                $("#addTask").on("click", function() {
+                    let taskText = $("#taskText").val().trim();
+                    if (taskText !== "") {
+                        let tasks = getTasks();
+                        tasks.push(taskText);
+                        saveTasks(tasks);
+                        renderTasks();
                         $("#taskText").val("");
                     }
                 });
+
+                // --- Renderizar las tareas al cargar la página ---
+                renderTasks();
             });
         </script>
     </body>
