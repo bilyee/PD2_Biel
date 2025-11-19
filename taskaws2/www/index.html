@@ -3,6 +3,8 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: https://ssl.gstatic.com 'unsafe-eval'; 
+        style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
         <title>Task List</title>
 
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
@@ -59,93 +61,9 @@
             <ul id="taskList"></ul>
         </div>
 
-        <script>
-            $(document).ready(function() {
-                // --- Función para obtener las tareas del localStorage ---
-                function getTasks() {
-                    // Obtenemos las tareas guardadas o un array vacío
-                    let stored = localStorage.getItem("tasks");
-                    return stored ? JSON.parse(stored) : [];
-                }
+        <script src="js/app.js"></script>
 
-                // --- Función para guardar el array de tareas en localStorage ---
-                function saveTasks(tasks) {
-                    localStorage.setItem("tasks", JSON.stringify(tasks));
-                }
-
-                function renderTasks() {
-                    $("#taskList").empty();
-                    let tasks = getTasks();
-
-                    tasks.forEach((taskText, index) => {
-                        let li = $(`
-                            <li>
-                                <div class="task-item">
-                                    <span class="task-text">${taskText}</span>
-                                    <button class="editBtn">Edit</button>
-                                    <button class="deleteBtn">X</button>
-                                </div>
-                            </li>
-                        `);
-
-                        // Botón editar
-                        li.find(".editBtn").on("click", function() {
-                            let span = $(this).siblings(".task-text");
-                            let oldText = span.text();
-
-                            $("<div></div>").dialog({
-                                modal: true,
-                                title: "Edit Task",
-                                open: function() {
-                                    let input = $('<input type="text" style="width:80%;">').val(oldText);
-                                    $(this).append(input);
-                                },
-                                buttons: {
-                                    "Save": function() {
-                                        let newText = $(this).find("input").val().trim();
-                                        if (newText !== "") {
-                                            tasks[index] = newText;
-                                            saveTasks(tasks);
-                                            renderTasks();
-                                        }
-                                        $(this).dialog("close");
-                                    },
-                                    "Cancel": function() {
-                                        $(this).dialog("close");
-                                    }
-                                },
-                                close: function() {
-                                    $(this).remove();
-                                }
-                            });
-                        });
-
-                        // Botón eliminar
-                        li.find(".deleteBtn").on("click", function() {
-                            tasks.splice(index, 1);
-                            saveTasks(tasks);
-                            renderTasks();
-                        });
-
-                        $("#taskList").append(li);
-                    });
-                }
-
-                // --- Agregar nueva tarea ---
-                $("#addTask").on("click", function() {
-                    let taskText = $("#taskText").val().trim();
-                    if (taskText !== "") {
-                        let tasks = getTasks();
-                        tasks.push(taskText);
-                        saveTasks(tasks);
-                        renderTasks();
-                        $("#taskText").val("");
-                    }
-                });
-
-                // --- Renderizar las tareas al cargar la página ---
-                renderTasks();
-            });
-        </script>
+        <script src="cordova.js"></script>
+        <script src="js/index.js"></script>
     </body>
 </html>
